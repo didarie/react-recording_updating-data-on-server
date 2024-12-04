@@ -1,7 +1,28 @@
 import { User } from '../types';
-import { getData } from '../utils/httpClient';
+import { client } from '../utils/httpClient';
 
 export function getUsers() {
-  return getData<User[]>('/users')
+  return client.get<User[]>('/users')
     .then(users => users.slice(0, 11))
+}
+
+export async function getUsers2() {
+  try {
+    const users = await client.get<User[]>('/users');
+
+    return users.slice(0, 11);
+  } catch (error) {
+    console.log('Catch', error);
+  } finally {
+    console.log('Finally');
+  }
+}
+
+export const getUsers3 = async () => {
+  const [users, posts] = await Promise.all([
+    client.get<User[]>('/users'),
+    client.get<User[]>('/posts')
+  ])
+
+  return users.slice(0, 11);
 }
